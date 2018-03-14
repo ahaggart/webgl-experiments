@@ -1,0 +1,27 @@
+{
+  "name": "webgl-experiments",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --open --config .webpack.dev.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahaggart/webgl-experiments.git"
+  },
+  "author": "Alexander Haggart",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ahaggart/webgl-experiments/issues"
+  },
+  "homepage": "https://github.com/ahaggart/webgl-experiments#readme",
+  "devDependencies": {
+    "gl-matrix": "^2.4.0",
+    "raw-loader": "^0.5.1",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12",
+    "webpack-dev-server": "^3.1.1",
+    "webpack-merge": "^4.1.2"
+  }
+}
