@@ -1,4 +1,7 @@
 import {makePerspectiveMatrix,clearScreen,draw} from './gl-utils.js';
+import {BasicShader} from './shaders.js';
+import {BasicQuad} from './BasicQuad.js';
+import {mat4,vec4} from 'gl-matrix';
 
 function main(){
   console.log("Starting WegGL canvas setup...");
@@ -16,6 +19,18 @@ function main(){
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   clearScreen(gl);
+
+  const projection = makePerspectiveMatrix(gl);
+
+  const shader = new BasicShader(gl); //create a basic shader
+
+  const quad = new BasicQuad([1,1],[0,0,-5]);
+
+  shader.build(quad);
+
+  shader.use(gl);
+
+  draw(gl,shader,[quad],projection);
 
 }
 

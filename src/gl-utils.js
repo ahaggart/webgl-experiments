@@ -6,6 +6,8 @@
  * Author: Alex Haggart
  */
 
+import {mat4} from 'gl-matrix';
+
 function makePerspectiveMatrix(gl){
   const fieldOfView = 45 * Math.PI / 180;   // in radians
   const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
@@ -36,12 +38,12 @@ function clearScreen(gl){
  * @param drawList  list of objects with a draw(gl) attribute
  * @param projection  projection matrix ie [[4][4][4][4]] list of four (lists of size four)
  */
-function draw(gl,programInfo,drawList,projection){
+function draw(gl,shader,drawList,projectionMatrix){
   // Set the shader uniforms
   gl.uniformMatrix4fv(
-      programInfo.locations.uniforms.projectionMatrix,
+      shader.programInfo.locations.uniforms.projection,
       false,
-      projection);
+      projectionMatrix);
 
   drawList.forEach((obj)=>obj.draw(gl));
 }
@@ -96,14 +98,51 @@ function initProgramInfo(gl){
       uniforms:{},
       attributes:{},
     },
-    setAttribute:function(name){
-      this.locations.attributes[name] = gl.getAttribLocation(this.program,name);
+    addAttribute:function(name,identifier){
+      this.locations.attributes[name] = gl.getAttribLocation(this.program,identifier);
     },
-    setUniform:function(name){
-      this.locations.uniforms[name] = gl.getUniformLocation(this.program,name);
+    addUniform:function(name,identifier){
+      this.locations.uniforms[name] = gl.getUniformLocation(this.program,identifier);
+    },
+    setProgram:function(program){
+      this.program = program;
     },
   };
 }
 
+function createAndBindBuffer(gl,type,data,usage){
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(type,buffer);
+  gl.bufferData(type,data,usage);
+  return buffer;
+}
 
-export {makePerspectiveMatrix,clearScreen,draw};
+function enableVertexFloatArrayBuffer(gl,buffer,position,indexSize){
+  const numComponents = indexSize;  // number of values per iteration
+  const type = gl.FLOAT;    // the data in the buffer is 32bit floats
+  const normalize = false;  // don't normalize
+  const stride = 0;         // how many bytes to get from one set of values to the next
+                            // 0 = use type and numComponents above
+  const offset = 0;         // how many bytes inside the buffer to start from
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.vertexAttribPointer(
+      position,
+      numComponents,
+      type,
+      normalize,
+      stride,
+      offset);
+  gl.enableVertexAttribArray(
+      position);
+}
+
+
+export {
+  makePerspectiveMatrix,
+  initShaderProgram,
+  initProgramInfo,
+  clearScreen,
+  draw,
+  createAndBindBuffer,
+  enableVertexFloatArrayBuffer
+};
