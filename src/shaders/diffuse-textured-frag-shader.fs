@@ -7,6 +7,7 @@ uniform sampler2D uSampler;
 varying highp vec2 vTexCoord;
 varying vec3 vNormal;
 varying vec3 vPosition;
+varying vec4 vColor;
 
 void main() {
   vec3 toLight = uLightPosition - vPosition;

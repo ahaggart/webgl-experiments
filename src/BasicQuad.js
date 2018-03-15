@@ -33,6 +33,13 @@ class BasicQuad{
       0,0,1,
     ];
 
+    this.texCoords = [
+      0.0,0.0,
+      1.0,0.0,
+      1.0,1.0,
+      0.0,1.0,
+    ];
+
     this.position = vec3.add([],position,[0,0,-10]);
   }
 
@@ -84,6 +91,7 @@ class BasicQuad{
     this.buffers.vertices  = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.vertices),gl.STATIC_DRAW);
     this.buffers.colors    = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.colors),gl.STATIC_DRAW);
     this.buffers.normals   = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.normals),gl.STATIC_DRAW);
+    this.buffers.texCoords = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.texCoords),gl.STATIC_DRAW);
     this.buffers.triangles = createAndBindBuffer(gl,gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(this.triangles),gl.STATIC_DRAW);
 
     //grab attribute locations from provided program info
@@ -91,6 +99,7 @@ class BasicQuad{
     this.positions.vertices = programInfo.locations.attributes.position;
     this.positions.colors   = programInfo.locations.attributes.color;
     this.positions.normals  = programInfo.locations.attributes.normal;
+    this.positions.texCoords= programInfo.locations.attributes.texCoord;
     this.positions.modelView= programInfo.locations.uniforms.modelView;
 
     this.transform = mat4.create();
@@ -105,9 +114,10 @@ class BasicQuad{
         false,
         this.transform);
 
-    enableVertexFloatArrayBuffer(gl,this.buffers.vertices,positions.vertices, 3);
-    enableVertexFloatArrayBuffer(gl,this.buffers.normals, positions.normals,  3);
-    enableVertexFloatArrayBuffer(gl,this.buffers.colors,  positions.colors,   4);
+    enableVertexFloatArrayBuffer(gl,this.buffers.vertices,  positions.vertices,   3);
+    enableVertexFloatArrayBuffer(gl,this.buffers.normals,   positions.normals,    3);
+    enableVertexFloatArrayBuffer(gl,this.buffers.texCoords, positions.texCoords,  2);
+    enableVertexFloatArrayBuffer(gl,this.buffers.colors,    positions.colors,     4);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.triangles);
     { //not sure what the point of this closure is, but it was in the first tutorial I used

@@ -4,12 +4,13 @@
  * 
  * Author: Alex Haggart
  */
-import {initProgramInfo,initShaderProgram} from './gl-utils.js';
+import {initProgramInfo,initShaderProgram,loadTexture} from './gl-utils.js';
 
 import vsBasic from './shaders/basic-vertex-shader.vs';
 import fsBasic from './shaders/basic-frag-shader.fs';
 import fsDiffuse from './shaders/diffuse-frag-shader.fs';
 import fsDiffuseTextured from './shaders/diffuse-textured-frag-shader.fs';
+import vsDiffuseTextured from './shaders/diffuse-textured-vertex-shader.vs';
 import fsBlinnPhong from './shaders/blinn-phong-frag-shader.fs';
 
 class BasicShader{
@@ -22,9 +23,9 @@ class BasicShader{
     this.programInfo.addUniform('modelView','uModelViewMatrix');
     this.programInfo.addUniform('projection','uProjectionMatrix');
 
-    this.programInfo.addAttribute('color',    'aColor');
     this.programInfo.addAttribute('normal',   'aNormal');
     this.programInfo.addAttribute('position', 'aPosition');
+    this.programInfo.addAttribute('color',    'aColor');
   }
 
   getInfo(){
@@ -72,10 +73,33 @@ class DiffuseShader extends BasicShader{
   }
 }
 
+class DiffuseTexturedShader extends DiffuseShader{
+  constructor(gl,vs=vsDiffuseTextured,fs=fsDiffuseTextured){
+    super(gl,vs,fs);
+
+    this.programInfo.addUniform('sampler','uSampler');
+    this.programInfo.addAttribute('texCoord','aTexCoord');
+
+    console.log(this.programInfo.locations.attributes.color);
+  }
+  use(gl,mode="full"){
+    super.use(gl,mode);
+    // Tell the shader we bound the texture to texture unit 0
+    gl.uniform1i(this.programInfo.locations.uniforms.sampler, 0);
+
+    const texture = loadTexture(gl,"stone_brick.png");
+    // Tell WebGL we want to affect texture unit 0
+    gl.activeTexture(gl.TEXTURE0);
+
+    // Bind the texture to texture unit 0
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+  }
+}
+
 class BlinnPhongShader extends DiffuseShader{
   constructor(gl,vs=vsBasic,fs=fsBlinnPhong){
     super(gl,vs,fs);
   }
 }
 
-export {BasicShader,DiffuseShader};
+export {BasicShader,DiffuseShader,DiffuseTexturedShader};
