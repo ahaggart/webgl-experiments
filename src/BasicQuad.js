@@ -1,3 +1,10 @@
+/**
+ * BasicQuad.js: BasicQuad class for testing and composing larger meshes
+ * 
+ * planned: more composition-friendly functions for mesh-building
+ * 
+ * Author: Alex Haggart
+ */
 import {createAndBindBuffer,enableVertexFloatArrayBuffer} from './gl-utils.js';
 import {mat4,vec4,vec3} from 'gl-matrix';
 
@@ -31,6 +38,7 @@ class BasicQuad{
 
   //adjust the raw coordinates of this quad (not the transform)
   adjust(transform){
+    //this could be more efficient and prettier
     let v0 = this.vertices.slice(0,3);  v0.push(1);
     let v1 = this.vertices.slice(3,6);  v1.push(1);
     let v2 = this.vertices.slice(6,9);  v2.push(1);

@@ -1,3 +1,12 @@
+/**
+ * Voxel.js: basic voxel class that obeys composition model;
+ *             can be "built" as a stand-alone self-drawing mesh, or
+ *             can be composed into larger meshes
+ *
+ * planned: textures, etc
+ * 
+ * Author: Alex Haggart
+ */
 import {BasicQuad} from './BasicQuad.js';
 import {mat4} from 'gl-matrix';
 import {createAndBindBuffer,enableVertexFloatArrayBuffer} from './gl-utils.js';

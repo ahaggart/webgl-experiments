@@ -22,8 +22,7 @@ function main(){
 
   const projection = makePerspectiveMatrix(gl);
 
-  const shader = new DiffuseShader(); //create a basic shader
-  shader.init(gl);
+  const shader = new DiffuseShader(gl); //create a basic shader
 
   // const quad = new BasicQuad([1,1],[0,0,-5]);
   const voxel = new Voxel(1,[0,0,-5]);
