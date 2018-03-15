@@ -100,9 +100,15 @@ function initProgramInfo(gl){
     },
     addAttribute:function(name,identifier){
       this.locations.attributes[name] = gl.getAttribLocation(this.program,identifier);
+      if(this.locations.attributes[name] == null){
+        console.error("Error adding Attribute: "+name+"; please check identifier.");
+      }
     },
     addUniform:function(name,identifier){
       this.locations.uniforms[name] = gl.getUniformLocation(this.program,identifier);
+      if(this.locations.uniforms[name] == null){
+        console.error("Error adding Uniform: "+name+"; please check identifier.");
+      }
     },
     setProgram:function(program){
       this.program = program;

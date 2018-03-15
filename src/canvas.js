@@ -1,6 +1,6 @@
 import {makePerspectiveMatrix,clearScreen,draw} from './gl-utils.js';
-import {BasicShader} from './shaders.js';
-import {BasicQuad} from './BasicQuad.js';
+import {BasicShader,DiffuseShader} from './shaders.js';
+import {Voxel} from './Voxel.js';
 import {mat4,vec4} from 'gl-matrix';
 
 function main(){
@@ -22,15 +22,19 @@ function main(){
 
   const projection = makePerspectiveMatrix(gl);
 
-  const shader = new BasicShader(gl); //create a basic shader
+  const shader = new DiffuseShader(); //create a basic shader
+  shader.init(gl);
 
-  const quad = new BasicQuad([1,1],[0,0,-5]);
+  // const quad = new BasicQuad([1,1],[0,0,-5]);
+  const voxel = new Voxel(1,[0,0,-5]);
 
-  shader.build(quad);
+  shader.build(voxel);
 
   shader.use(gl);
-
-  draw(gl,shader,[quad],projection);
+  window.setInterval(()=>{
+    clearScreen(gl);
+    draw(gl,shader,[voxel],projection);
+  },100);
 
 }
 
