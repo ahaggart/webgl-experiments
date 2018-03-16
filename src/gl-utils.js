@@ -98,20 +98,43 @@ function initProgramInfo(gl){
       uniforms:{},
       attributes:{},
     },
+    expected:{
+      uniforms:[],
+      attributes:[],
+    },
     addAttribute:function(name,identifier){
-      this.locations.attributes[name] = gl.getAttribLocation(this.program,identifier);
-      if(this.locations.attributes[name] == -1){
+      let location = gl.getAttribLocation(this.program,identifier);
+      if(location == -1){ //improperly loaded attributes are -1
         console.error("Error adding Attribute: "+name+"; please check identifier: "+identifier);
+      } else {
+        this.locations.attributes[name] = location;
+        this.expected.attributes.push(name);
       }
     },
-    addUniform:function(name,identifier){
-      this.locations.uniforms[name] = gl.getUniformLocation(this.program,identifier);
-      if(this.locations.uniforms[name] == null){
+    addUniform:function(name,identifier,isGlobal=false){
+      let location = gl.getUniformLocation(this.program,identifier);
+      if(location == null){ //improperly loaded uniforms are null
         console.error("Error adding Uniform: "+name+"; please check identifier.");
+      } else {
+        if(!isGlobal){
+          this.expected.uniforms.push(name);
+        }
+        this.locations.uniforms[name] = location;
       }
     },
     setProgram:function(program){
       this.program = program;
+    },
+    buildObjectUniforms:function(buildable){
+      this.expected.attributes.forEach((attr)=>{
+        buildable.positions.uniforms[attr] = this.locations.uniforms[attr];
+      });
+    },
+    buildObjectAttributes:function(buildable){
+      this.expected.attributes.forEach((attr)=>{
+        buildable.buffers[attr] = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(buildable.data[attr]),gl.STATIC_DRAW);
+        buildable.positions.attributes[attr] = this.locations.attributes[attr];
+      });
     },
   };
 }
@@ -244,6 +267,17 @@ function getFacing(condition,view,vertices,indices,transform){
   return facingVertices;
 }
 
+function findEdges(camera,mesh){
+  const towardsView = (dot)=>(dot > 0);
+  const facing = getFacing(towardsView,camera.position,mesh.vertices,mesh.indices,mesh.transform);
+
+  const awayFromView = (dot)=>(dot <= 0);
+  const away = getFacing(awayFromView,camera.position,mesh.vertices,mesh.indices,mesh.transform);
+
+  const edges = [...(facing.values())].filter((index)=>away.has(index));
+  return edges;
+}
+
 
 export {
   makePerspectiveMatrix,
@@ -255,5 +289,6 @@ export {
   enableVertexFloatArrayBuffer,
   updateBuffer,
   loadTexture,
-  getFacing
+  getFacing,
+  findEdges
 };

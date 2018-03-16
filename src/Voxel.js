@@ -40,31 +40,32 @@ class Voxel{
     this.theta = 0;
 
     // compose master buffer set from each quad's set
-    this.vertices = [];
-    this.indices  = [];
-    this.colors   = [];
-    this.normals  = [];
-    this.texCoords= [];
+    this.data = {};
+    this.data.vertices = [];
+    this.data.indices  = [];
+    this.data.colors   = [];
+    this.data.normals  = [];
+    this.data.texCoords= [];
     this.faces.forEach((face,idx)=>{
       //extend master lists with each quad's buffer
-      Array.prototype.push.apply(this.vertices, face.vertices);
-      Array.prototype.push.apply(this.colors,   face.colors);
-      Array.prototype.push.apply(this.texCoords,face.texCoords);
-      Array.prototype.push.apply(this.normals,  face.normals.map((n,i)=>n+face.vertices[i]));
+      Array.prototype.push.apply(this.data.vertices, face.data.vertices);
+      Array.prototype.push.apply(this.data.colors,   face.data.colors);
+      Array.prototype.push.apply(this.data.texCoords,face.data.texCoords);
+      Array.prototype.push.apply(this.data.normals,  face.data.normals.map((n,i)=>n+face.data.vertices[i]));
 
       //extend and offset the master index buffer
-      Array.prototype.push.apply(this.indices, face.triangles.map((index)=>index+idx*4));
+      Array.prototype.push.apply(this.data.indices, face.data.triangles.map((index)=>index+idx*4));
     });
 
   }
   build(gl,programInfo){
     //create and bind buffers for drawing this voxel
     this.buffers = {}; //create a buffer attribute on this object
-    this.buffers.vertices = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.vertices),gl.STATIC_DRAW);
-    this.buffers.colors   = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.colors),gl.STATIC_DRAW);
-    this.buffers.normals  = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.normals),gl.STATIC_DRAW);
-    this.buffers.texCoords= createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.texCoords),gl.STATIC_DRAW);
-    this.buffers.indices  = createAndBindBuffer(gl,gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(this.indices),gl.STATIC_DRAW);
+    this.buffers.vertices = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.data.vertices),gl.STATIC_DRAW);
+    this.buffers.colors   = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.data.colors),gl.STATIC_DRAW);
+    this.buffers.normals  = createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.data.normals),gl.STATIC_DRAW);
+    this.buffers.texCoords= createAndBindBuffer(gl,gl.ARRAY_BUFFER,new Float32Array(this.data.texCoords),gl.STATIC_DRAW);
+    this.buffers.indices  = createAndBindBuffer(gl,gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(this.data.indices),gl.STATIC_DRAW);
 
     //grab attribute locations from provided program info
     this.positions = {};
@@ -81,8 +82,8 @@ class Voxel{
 
   }
   draw(gl){
-    // mat4.rotate(this.transform,this.transform,2*Math.PI/180,[1,0,0]);
-    // mat4.rotate(this.transform,this.transform,3*Math.PI/180,[0,1,0]);
+    mat4.rotate(this.transform,this.transform,2*Math.PI/180,[1,0,0]);
+    mat4.rotate(this.transform,this.transform,3*Math.PI/180,[0,1,0]);
 
     gl.uniformMatrix4fv(
         this.positions.modelView,

@@ -1,4 +1,4 @@
-import {makePerspectiveMatrix,clearScreen,draw,getFacing} from './gl-utils.js';
+import {makePerspectiveMatrix,clearScreen,draw,findEdges} from './gl-utils.js';
 import {BasicShader,DiffuseShader,DiffuseTexturedShader} from './shaders.js';
 import {Voxel} from './Voxel.js';
 import {mat4,vec4} from 'gl-matrix';
@@ -31,6 +31,7 @@ function main(){
 
   shader.use(gl);
 
+  //basic cube because current voxel structure doesnt play nice
   const vertices = [
     -0.5,-0.5,0.5, //front face
      0.5,-0.5,0.5,
@@ -51,16 +52,18 @@ function main(){
     5,4,1,1,0,5, //bottom
   ];
 
-  const towardsView = (dot)=>(dot > 0);
-  const facing = getFacing(towardsView,[0,0,0],vertices,indices,voxel.transform);
-  console.log(facing);
+  const mesh = {
+    indices: indices,
+    vertices: vertices,
+    transform: voxel.transform,
+  }
 
-  const awayFromView = (dot)=>(dot <= 0);
-  const away = getFacing(awayFromView,[0,0,0],vertices,indices,voxel.transform);
-  console.log(away);
+  const camera = {
+    position: [0,0,0],
+  }
 
-  const edge = [...(facing.values())].filter((index)=>away.has(index));
-  console.log(edge);
+  const edges = findEdges(camera,mesh);
+  console.log(edges);
 
   window.setInterval(()=>{
     clearScreen(gl);
