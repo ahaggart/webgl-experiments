@@ -76,11 +76,13 @@ class Voxel{
 
     this.transform = mat4.create();
     mat4.fromTranslation(this.transform,this.position);
+    mat4.rotate(this.transform,this.transform,20*Math.PI/180,[1,0,0]);
+    mat4.rotate(this.transform,this.transform,30*Math.PI/180,[0,1,0]);
 
   }
   draw(gl){
-    mat4.rotate(this.transform,this.transform,2*Math.PI/180,[1,0,0]);
-    mat4.rotate(this.transform,this.transform,3*Math.PI/180,[0,1,0]);
+    // mat4.rotate(this.transform,this.transform,2*Math.PI/180,[1,0,0]);
+    // mat4.rotate(this.transform,this.transform,3*Math.PI/180,[0,1,0]);
 
     gl.uniformMatrix4fv(
         this.positions.modelView,

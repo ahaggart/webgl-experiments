@@ -21,9 +21,9 @@ class BasicQuad{
 
     this.colors = [ //default colors to test shaders
       1,0,0,1,
-      0,1,0,1,
-      0,0,1,1,
-      1,1,0,1,
+      1,0,0,1,
+      1,0,0,1,
+      1,0,0,1,
     ];
 
     this.normals = [ //this is an xy quad, so all the normals are in z

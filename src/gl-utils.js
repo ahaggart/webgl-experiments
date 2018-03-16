@@ -6,7 +6,7 @@
  * Author: Alex Haggart
  */
 
-import {mat4} from 'gl-matrix';
+import {mat4,vec4,vec3} from 'gl-matrix';
 
 function makePerspectiveMatrix(gl){
   const fieldOfView = 45 * Math.PI / 180;   // in radians
@@ -102,7 +102,6 @@ function initProgramInfo(gl){
       this.locations.attributes[name] = gl.getAttribLocation(this.program,identifier);
       if(this.locations.attributes[name] == -1){
         console.error("Error adding Attribute: "+name+"; please check identifier: "+identifier);
-        console.error(gl.getProgramInfoLog(this.program));
       }
     },
     addUniform:function(name,identifier){
@@ -122,6 +121,11 @@ function createAndBindBuffer(gl,type,data,usage){
   gl.bindBuffer(type,buffer);
   gl.bufferData(type,data,usage);
   return buffer;
+}
+
+function updateBuffer(gl,buffer,type,data,usage){
+  gl.bindBuffer(type,buffer);
+  gl.bufferData(type,data,usage);
 }
 
 function enableVertexFloatArrayBuffer(gl,buffer,position,indexSize){
@@ -197,6 +201,49 @@ function isPowerOf2(value) {
   return (value & (value - 1)) == 0;
 }
 
+//get a set of all the vertices in triangles facing a point 
+function getFacing(condition,view,vertices,indices,transform){
+  const facingVertices = new Set();
+  const toView = vec3.create();
+  const normal = vec3.create();
+  const v0 = vec4.create();
+  const v1 = vec4.create();
+  const v2 = vec4.create();
+  let printout = "";
+  for(let i = 0; i < indices.length; i+=3){
+    vec4.set(v0,vertices[indices[i]*3],vertices[indices[i]*3+1],vertices[indices[i]*3+2],1);
+    vec4.set(v1,vertices[indices[i+1]*3],vertices[indices[i+1]*3+1],vertices[indices[i+1]*3+2],1);
+    vec4.set(v2,vertices[indices[i+2]*3],vertices[indices[i+2]*3+1],vertices[indices[i+2]*3+2],1);
+
+    vec4.transformMat4(v0,v0,transform);
+    vec4.transformMat4(v1,v1,transform);
+    vec4.transformMat4(v2,v2,transform);
+
+    // let v0t = vec3.copy(vec3.create(),v0);
+    // let v1t = vec3.copy(vec3.create(),v1);
+    // let v2t = vec3.copy(vec3.create(),v2);
+
+    printout = "vertex: ("+v0+"),("+v1+"),("+v2+")";
+    vec3.sub(v1,v1,v0);
+    vec3.sub(v2,v2,v0);
+    vec3.sub(toView,view,v0);
+    vec3.cross(normal,v1,v2);
+    if(condition(vec3.dot(normal,toView))){
+      facingVertices.add(indices[i]);
+      facingVertices.add(indices[i+1]);
+      facingVertices.add(indices[i+2]);      
+      // facingVertices.add(v0t);
+      // facingVertices.add(v1t);
+      // facingVertices.add(v2t);
+      // console.log("normal: "+normal);
+      // console.log("toView: "+toView);
+      // console.log(printout);
+    }
+  }
+
+  return facingVertices;
+}
+
 
 export {
   makePerspectiveMatrix,
@@ -206,5 +253,7 @@ export {
   draw,
   createAndBindBuffer,
   enableVertexFloatArrayBuffer,
-  loadTexture
+  updateBuffer,
+  loadTexture,
+  getFacing
 };

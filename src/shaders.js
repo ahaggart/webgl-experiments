@@ -80,7 +80,6 @@ class DiffuseTexturedShader extends DiffuseShader{
     this.programInfo.addUniform('sampler','uSampler');
     this.programInfo.addAttribute('texCoord','aTexCoord');
 
-    console.log(this.programInfo.locations.attributes.color);
   }
   use(gl,mode="full"){
     super.use(gl,mode);
